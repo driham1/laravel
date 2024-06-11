@@ -8,7 +8,6 @@ on:
 
 jobs:
   laravel-tests:
-
     runs-on: ubuntu-latest
 
     steps:
@@ -67,4 +66,8 @@ jobs:
         run: sleep 10
 
       - name: Test if application is running
-        run: curl --fail http://127.0.0.1:8000 || true
+        run: curl --fail http://127.0.0.1:8000 || exit 1
+
+      - name: Keep the server running
+        run: |
+          while true; do sleep 1000; done
