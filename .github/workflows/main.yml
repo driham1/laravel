@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -27,14 +27,7 @@ jobs:
           composer install --prefer-dist --no-ansi --no-interaction --no-scripts --no-progress --no-suggest
 
       - name: Copy .env file
-        run: |
-          cp .env.example .env
-        env:
-          APP_ENV: testing
-          APP_DEBUG: true
-          APP_KEY: base64:yourbase64keyhere
-          DB_CONNECTION: sqlite
-          DB_DATABASE: :memory
+        run: cp .env.example .env
 
       - name: Generate application key
         run: php artisan key:generate
