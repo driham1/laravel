@@ -3,66 +3,49 @@ name: Deploy Laravel Application
 on:
   push:
     branches:
-      - master
+      - main  # Adjust the branch name if necessary
+  pull_request:
+    branches:
+      - main  # Adjust the branch name if necessary
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
-
+    runs-on: self-hosted  # Ensures the job runs on your self-hosted runner
     steps:
-      - name: Checkout code
-        uses: actions/checkout@v2
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
       - name: Set up PHP
         uses: shivammathur/setup-php@v2
         with:
-          php-version: '8.3'
-          extensions: mbstring, pdo, zip, bcmath, xml, curl, gd
+          php-version: '8.2'
+          tools: composer
 
-      - name: Install dependencies
-        run: |
-          sudo apt-get update
-          sudo apt-get install -y \
-            libpng-dev \
-            libjpeg-dev \
-            libfreetype6-dev \
-            php-gd
-          composer install --prefer-dist \
-            --no-ansi \
-            --no-interaction \
-            --no-scripts \
-            --no-progress \
-            --no-suggest
+      - name: Install Composer Dependencies
+        run: composer install --no-progress --no-interaction --prefer-dist --optimize-autoloader
 
       - name: Copy .env file
-        run: cp .env.example .env
-
-      - name: Generate application key
-        run: php artisan key:generate
-
-      - name: Setup testing environment
-        run: cp .env.testing .env
-        env:
-          APP_ENV: testing
-
-      - name: Cache configuration
         run: |
-          php artisan config:cache
-          php artisan route:cache
-          php artisan view:cache
+          cp .env.example .env
+          php artisan key:generate
 
-      - name: Run tests
-        run: php artisan test
-        env:
-          APP_ENV: testing
+      - name: Cache Laravel Config
+        run: php artisan config:cache
 
-      - name: Start Laravel application
-        run: php artisan serve --host=0.0.0.0 --port=8000 &
-        env:
-          APP_ENV: local
+      - name: Run Migrations
+        run: php artisan migrate --force
 
-      - name: Wait for application to start
-        run: sleep 10
+      - name: Install Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
 
-      - name: Test if application is running
-        run: curl --fail http://127.0.0.1:8000 || true
+      - name: Install NPM Dependencies
+        run: npm install
+
+      - name: Build Assets
+        run: npm run build
+
+      - name: Restart Server
+        run: |
+          sudo systemctl restart apache2  # Adjust based on your server (e.g., nginx or apache)
