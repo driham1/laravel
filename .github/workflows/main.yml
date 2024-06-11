@@ -59,3 +59,9 @@ jobs:
         run: curl --fail http://127.0.0.1:8000
         env:
           APP_ENV: local
+
+      - name: Display Laravel logs
+        if: failure()
+        run: cat storage/logs/laravel.log
+        env:
+          APP_ENV: local
