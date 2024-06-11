@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
+  deploy:
+    runs-on: self-hosted
 
     steps:
       - name: Checkout code
@@ -56,6 +56,5 @@ jobs:
         env:
           APP_ENV: local
 
-      - name: Deploy Laravel Application
+      - name: Test if application is running
         run: curl --fail http://127.0.0.1:8000 || exit 1
-         
