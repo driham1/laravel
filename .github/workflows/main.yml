@@ -26,6 +26,7 @@ jobs:
           docker-php-ext-install gd
           composer install --prefer-dist --no-ansi --no-interaction --no-scripts --no-progress --no-suggest
 
+
       - name: Copy .env file
         run: |
           cp .env.example .env
