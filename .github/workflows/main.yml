@@ -5,7 +5,6 @@ on:
     branches:
       - master
 
-
 jobs:
   deploy:
     runs-on: ubuntu-latest
@@ -50,7 +49,7 @@ jobs:
           APP_ENV: testing
 
       - name: Start Laravel application
-        run: php artisan serve --host=127.0.0.1 --port=8000 &
+        run: php artisan serve --host=0.0.0.0 --port=8000 &
         env:
           APP_ENV: local
 
@@ -58,4 +57,4 @@ jobs:
         run: sleep 10
 
       - name: Test if application is running
-        run: curl --fail http://127.0.0.1:8000 || true
+        run: curl --fail http://0.0.0.0:8000 || true
