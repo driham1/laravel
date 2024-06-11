@@ -17,13 +17,13 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.0'
+          extensions: mbstring, pdo, zip, bcmath, xml, curl, gd
 
       - name: Install dependencies
         run: |
           sudo apt-get update
           sudo apt-get install -y libpng-dev libjpeg-dev libfreetype6-dev
-          docker-php-ext-configure gd --with-freetype --with-jpeg
-          docker-php-ext-install gd
+          sudo apt-get install -y php-gd
           composer install --prefer-dist --no-ansi --no-interaction --no-scripts --no-progress --no-suggest
 
       - name: Copy .env file
