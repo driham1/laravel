@@ -7,7 +7,7 @@ on:
 
 jobs:
   deploy:
-    runs-on: self-hosted  # Utilisez votre propre runner auto-hébergé
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -43,13 +43,20 @@ jobs:
           php artisan route:cache
           php artisan view:cache
 
-      - name: Start Laravel application
-        run: php artisan serve --host=0.0.0.0 --port=8000 &
-        env:
-          APP_ENV: local
+      - name: Stop Apache if running
+        run: sudo service apache2 stop || true
 
-      - name: Wait for application to start
+      - name: Copy files to Apache directory
+        run: |
+          sudo rm -rf /var/www/html/*
+          sudo cp -R * /var/www/html/
+          sudo chown -R www-data:www-data /var/www/html/
+
+      - name: Restart Apache
+        run: sudo service apache2 restart
+
+      - name: Wait for deployment to complete
         run: sleep 10
 
       - name: Test if application is running
-        run: curl --fail http://0.0.0.0:8000 || true
+        run: curl --fail http://localhost || true
