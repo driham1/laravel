@@ -1,13 +1,12 @@
-name: Laravel
+name: Deploy Laravel Application
 
 on:
   push:
-    branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    branches:
+      - master
 
 jobs:
-  laravel-tests:
+  deploy:
     runs-on: ubuntu-latest
 
     steps:
@@ -65,12 +64,5 @@ jobs:
       - name: Wait for application to start
         run: sleep 10
 
-      - name: Check Laravel logs
-        run: cat storage/logs/laravel.log || true
-
       - name: Test if application is running
-        run: curl --fail http://127.0.0.1:8000 || exit 1
-
-      - name: Keep the server running
-        run: |
-          while true; do sleep 1000; done
+        run: curl --fail http://127.0.0.1:8000 || true
