@@ -6,8 +6,8 @@ on:
       - master
 
 jobs:
-  deploy:
-    runs-on: self-hosted
+  build:
+    runs-on: ubuntu-latest
 
     steps:
       - name: Checkout code
@@ -55,3 +55,7 @@ jobs:
           curl --retry 5 --retry-delay 5 --retry-connrefused http://127.0.0.1:8000
         env:
           APP_ENV: local
+
+      - name: Deploy Laravel Application
+        run: curl --fail http://127.0.0.1:8000 || exit 1
+         
