@@ -1,6 +1,5 @@
 name: Deploy Laravel Application
 
-
 on:
   push:
     branches:
@@ -33,9 +32,10 @@ jobs:
       - name: Generate application key
         run: php artisan key:generate
 
-      # Ignore the migration step
-      #- name: Run migrations
-      #  run: php artisan migrate --force
+      - name: Setup testing environment
+        run: cp .env.testing .env  # Copie du fichier .env de test
+        env:
+          APP_ENV: testing
 
       - name: Cache configuration
         run: |
@@ -44,11 +44,14 @@ jobs:
           php artisan view:cache
 
       - name: Run tests
-        run: |
-          cp .env.testing .env  # Copie du fichier .env de test
-          php artisan test
+        run: php artisan test
         env:
           APP_ENV: testing
 
-      - name: Run Laravel application
-        run: php artisan serve --host=0.0.0.0 --port=8000
+      - name: Start Laravel application
+        run: |
+          php artisan serve --host=0.0.0.0 --port=8000 &
+          sleep 10
+          curl --retry 5 --retry-delay 5 --retry-connrefused http://127.0.0.1:8000
+        env:
+          APP_ENV: local
